@@ -11,7 +11,12 @@ const sheru = new Sheru({
         short: 'f',
         long: 'fast'
       },
-      'slow' // automaticly uses 's' as short variant
+      'slow', // automaticly uses 's' as short variant
+      {
+        short: 'd',
+        long: 'direction'
+        params: 1 
+      },
     ],
     handler: () => {
       console.log('please use "move away [options]"');
@@ -27,5 +32,5 @@ const sheru = new Sheru({
   }
 });
 
-sheru.exec('move away -s && move away --fast');
+sheru.exec('move away -s && move away --fast; move away -d 270deg --slow');
 ```
