@@ -13,9 +13,8 @@ const sheru = new Sheru({
       },
       'slow', // automaticly uses 's' as short variant
       {
-        short: 'd',
-        long: 'direction'
-        params: 1 
+        long: 'speed'
+        params: ['value','unit']
       },
     ],
     handler: () => {
@@ -25,12 +24,22 @@ const sheru = new Sheru({
       away: {
         text: "away from your current selected enemy"
         hander: (options) => {
-          console.log(`You move away ${options.slowly ? 'slowly' : (options.fast ? 'as fast as you can' : '')}`);
+          var result = 'You move away';
+          if(options.slowly) {
+            result += ' slowly';
+          }
+          if(options.fast) {
+            result += ' as fast as you can';
+          }
+          if(options.speed) {
+            result += ` with ${options.speed.value}${options.speed.unit}`;
+          }          
+          console.log(result);
         }
       }
     }
   }
 });
 
-sheru.exec('move away -s && move away --fast; move away -d 270deg --slow');
+sheru.exec('move away -s && move away --fast; move away -d 270deg --speed 4 m/s');
 ```
