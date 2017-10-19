@@ -14,3 +14,4 @@ eather a string or an object in the following format:
 - **short** string `-s`
 - **long** string `--short`
 - **params** number to note how many are expected, or array of strings where the values are maped in that order to that name
+
