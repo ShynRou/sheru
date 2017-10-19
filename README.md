@@ -1,7 +1,7 @@
 # sheru
 JS function wrapper for shell syntaxed scripts
 
-
+### [API Reference](https://github.com/ShynRou/sheru/blob/master/api.md)
 ```
 const sheru = new Sheru({
   move: {
