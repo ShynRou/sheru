@@ -103,6 +103,7 @@ async function run() {
     ['move --help'],
     ['move away'],
     ['move away -s -d'],
+    ['not a function'],
     ['move away -s "300 * 300" kmh  -d'],
     ['A; B; C', 'A B C'],
     ['false && A', 'false'],
@@ -114,7 +115,7 @@ async function run() {
     ['false ? B : C', 'false C'],
     ['A; B ? ((A && B) | log) : (false) ; C', 'A B A B {"": "B"} C'],
     ['false || ((A | log) && logConfig)', 'false A {"": "A"} {"config": "none"}'],
-    ['pass "help me" | log']
+    ['pass "help me" | log', {'':'help me'}],
   ].reduce((chain, args) => chain.then(() => test(...args)), Promise.resolve());
 }
 

@@ -198,15 +198,22 @@ Sheru.prototype = {
         }
       }
 
-      return (input, config) => {
-        if (typeof input === 'object') {
-          options = Object.assign({}, options, input);
-        }
-        else if (input != null) {
-          options[''] = input;
-        }
-        return command.handler(options, config);
-      };
+      if (command && command.handler) {
+        return (input, config) => {
+          if (typeof input === 'object') {
+            options = Object.assign({}, options, input);
+          }
+          else if (input != null) {
+            options[''] = input;
+          }
+          return command.handler(options, config);
+        };
+      }
+      else {
+        return (input, config) => {
+          throw new Error('Unknown command: "'+script+'"!');
+        };
+      }
     }
     else {
       return null;
