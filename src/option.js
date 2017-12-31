@@ -7,9 +7,9 @@ const Option = function (option) {
     this.short = option.short;
     this.long = option.long;
     if (option.params) {
-      if (typeof option.params === 'number') {
+      if (typeof option.params === 'number' && option.params > 1 ) {
         this.params = [];
-        for (var i = 0; i < option.params.length; i++) {
+        for (var i = 0; i < option.params; i++) {
           this.params.push(i);
         }
       }

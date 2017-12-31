@@ -1,15 +1,21 @@
 const Option = require('./option');
-const Command = require('./option');
+const Command = require('./command');
 
 const Sheru = function (commands) {
-  this.commands = commands;
+  this.commands = Object.keys(commands).reduce(
+    (acc, id) => {
+      acc[id] = new Command(commands[id]);
+      return acc;
+    },
+    {}
+  );
   // TODO parse commands object and throw errors invalid config
 };
 
 Sheru.prototype = {
 
   addCommand(id, commandObj) {
-    this.commands[id] = commandObj;
+    this.commands[id] = new Command(commandObj);
   },
 
   removeCommand(id) {
@@ -53,10 +59,10 @@ Sheru.prototype = {
     commandArray = commandArray.map((script) => this.parseCommandChain(script, extrudedStrings, extrudedScripts));
 
     if (commandArray.length === 1) {
-      return async (input, config) => commandArray[0](input, config);
+      return async(input, config) => commandArray[0](input, config);
     }
     else {
-      return async (input, config) => {
+      return async(input, config) => {
         for (let i = 0; i < commandArray.length; i++) {
           try {
             await commandArray[i](input, config);
@@ -78,7 +84,7 @@ Sheru.prototype = {
       let checkFunc = this.parseCommandChain(match[1], strings, subCommands);
       let trueFunc = this.parseCommandChain(match[2], strings, subCommands);
       let falseFunc = this.parseCommandChain(match[3], strings, subCommands);
-      return async (input, config) => await checkFunc(null, config) ? await trueFunc(null, config) : await falseFunc(null, config);
+      return async(input, config) => await checkFunc(null, config) ? await trueFunc(null, config) : await falseFunc(null, config);
     }
 
     // AND, OR
@@ -86,10 +92,10 @@ Sheru.prototype = {
       let commandA = this.parseCommandChain(match[1], strings, subCommands);
       let commandB = this.parseCommandChain(match[3], strings, subCommands);
       if (match[2] === '||') {
-        return async (input, config) => await commandA(null, config) || await commandB(null, config);
+        return async(input, config) => await commandA(null, config) || await commandB(null, config);
       }
       else {
-        return async (input, config) => await commandA(null, config) && await commandB(null, config);
+        return async(input, config) => await commandA(null, config) && await commandB(null, config);
       }
     }
 
@@ -97,7 +103,7 @@ Sheru.prototype = {
     if ((match = /^(.*?)\|(.*)$/i.exec(script))) {
       let source = this.parseCommandChain(match[1], strings, subCommands);
       let target = this.parseCommandChain(match[2], strings, subCommands);
-      return async (input, config) => await target(await source(input, config), config);
+      return async(input, config) => await target(await source(input, config), config);
     }
 
     // INJECT SUB COMMANDS
@@ -178,7 +184,10 @@ Sheru.prototype = {
           });
 
           if (currentOption && currentOption.params) {
-            if (paramCount < currentOption.params.length) {
+            if(currentOption.params === 1 && paramCount === 0) {
+              options[currentOption.long] = dataSegment;
+            }
+            else if (paramCount < currentOption.params.length) {
               let paramKey = currentOption.params[paramCount];
               options[currentOption.long][paramKey] = dataSegment;
               paramCount++;
@@ -211,7 +220,7 @@ Sheru.prototype = {
       }
       else {
         return (input, config) => {
-          throw new Error('Unknown command: "'+script+'"!');
+          throw new Error('Unknown command: "' + script + '"!');
         };
       }
     }
