@@ -59,10 +59,10 @@ Sheru.prototype = {
     commandArray = commandArray.map((script) => this.parseCommandChain(script, extrudedStrings, extrudedScripts));
 
     if (commandArray.length === 1) {
-      return async(input, config) => commandArray[0](input, config);
+      return async (input, config) => commandArray[0](input, config);
     }
     else {
-      return async(input, config) => {
+      return async (input, config) => {
         for (let i = 0; i < commandArray.length; i++) {
           try {
             await commandArray[i](input, config);
@@ -84,7 +84,7 @@ Sheru.prototype = {
       let checkFunc = this.parseCommandChain(match[1], strings, subCommands);
       let trueFunc = this.parseCommandChain(match[2], strings, subCommands);
       let falseFunc = this.parseCommandChain(match[3], strings, subCommands);
-      return async(input, config) => await checkFunc(null, config) ? await trueFunc(null, config) : await falseFunc(null, config);
+      return async (input, config) => await checkFunc(null, config) ? await trueFunc(null, config) : await falseFunc(null, config);
     }
 
     // AND, OR
@@ -92,10 +92,10 @@ Sheru.prototype = {
       let commandA = this.parseCommandChain(match[1], strings, subCommands);
       let commandB = this.parseCommandChain(match[3], strings, subCommands);
       if (match[2] === '||') {
-        return async(input, config) => await commandA(null, config) || await commandB(null, config);
+        return async (input, config) => await commandA(null, config) || await commandB(null, config);
       }
       else {
-        return async(input, config) => await commandA(null, config) && await commandB(null, config);
+        return async (input, config) => await commandA(null, config) && await commandB(null, config);
       }
     }
 
@@ -103,7 +103,7 @@ Sheru.prototype = {
     if ((match = /^(.*?)\|(.*)$/i.exec(script))) {
       let source = this.parseCommandChain(match[1], strings, subCommands);
       let target = this.parseCommandChain(match[2], strings, subCommands);
-      return async(input, config) => await target(await source(input, config), config);
+      return async (input, config) => await target(await source(input, config), config);
     }
 
     // INJECT SUB COMMANDS
@@ -161,12 +161,12 @@ Sheru.prototype = {
           dataSegment = dataSegment.replace(/^--?/, '');
           type = type === 1 ? 'short' : 'long';
 
-          currentOption = command.options.find(function (opt) {
+          currentOption = command.options && command.options.find(function (opt) {
             return opt && opt[type] === dataSegment;
           });
 
           if (!currentOption) {
-            throw TypeError('Option "' + dataSegment + '" unknown.');
+            throw TypeError('Option "' + dataSegment + '" unknown for Command "'+ command +'"');
           }
           else {
             options[currentOption.long] = currentOption.params ? {} : true;
@@ -184,7 +184,7 @@ Sheru.prototype = {
           });
 
           if (currentOption && currentOption.params) {
-            if(currentOption.params === 1 && paramCount === 0) {
+            if (currentOption.params === 1 && paramCount === 0) {
               options[currentOption.long] = dataSegment;
             }
             else if (paramCount < currentOption.params.length) {
